@@ -1,37 +1,37 @@
-import string
-import random
 import threading
+import random
 import time
-
-
-def random_string():
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-
-def main_thread(list_data, event):
+import string
+def generate_random_strings():
     while True:
-        new_string = random_string()
-        list_data.append(new_string)
-        print(list_data)
-        time.sleep(1)
+        random_string = ''.join(random.choices(string.ascii_letters, k=random.randint(5,10)))
+        with lock:
+            my_list.append(random_string)
+        time.sleep(3)
 
-def viewer_thread(list_data, event):
+def print_list():
     while True:
-        print(list_data)
+        with lock:
+            print(my_list)
+        time.sleep(3)
+
+def sort_and_save_list():
+    while True:
+        with lock:
+            my_list.sort()
+            with open("list.txt", "w") as file:
+                for item in my_list:
+                    file.write(f"{item}\n")
         time.sleep(5)
-def sorter_thread(list_data, event):
-    while True:
-        time.sleep(5)
-        sorted_list = sorted(list_data)
-        with open("list.txt", "w") as file:
-            for item in sorted_list:
-                file.write(item + "\n")
-shared_list = []
-event = threading.Event()
 
-producer = threading.Thread(target=main_thread, args=(shared_list, event))
-view = threading.Thread(target=viewer_thread, args=(shared_list, event))
-sorter = threading.Thread(target=sorter_thread, args=(shared_list, event))
+my_list = []
 
-producer.start()
-view.start()
-sorter.start()
+lock = threading.Lock()
+
+main = threading.Thread(target=generate_random_strings)
+view_list = threading.Thread(target=print_list)
+sort_and_save_list_file = threading.Thread(target=sort_and_save_list)
+
+main.start()
+view_list.start()
+sort_and_save_list_file.start()
