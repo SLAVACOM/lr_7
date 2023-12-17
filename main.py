@@ -2,18 +2,22 @@ import threading
 import random
 import time
 import string
+
+
 def generate_random_strings():
     while True:
-        random_string = ''.join(random.choices(string.ascii_letters, k=random.randint(5,10)))
+        random_string = ''.join(random.choices(string.ascii_letters, k=random.randint(5, 10)))
         with lock:
             my_list.append(random_string)
         time.sleep(3)
+
 
 def print_list():
     while True:
         with lock:
             print(my_list)
         time.sleep(3)
+
 
 def sort_and_save_list():
     while True:
